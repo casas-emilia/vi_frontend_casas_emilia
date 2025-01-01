@@ -20,10 +20,13 @@ COPY . .
 RUN npm run build
 
 # Usa una imagen ligera de NGINX para servir los archivos estáticos
-FROM nginx:alpine
+FROM nginx:1.27-alpine
 
 # Copia los archivos estáticos generados al contenedor NGINX
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copia la configuración personalizada de NGINX
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expone el puerto 80 para servir la aplicación
 EXPOSE 80
