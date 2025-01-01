@@ -8,7 +8,8 @@ import axios from 'axios'; // Importa axios directamente
  */
 export const login = async (email, password) => {
   try {
-    const response = await axios.post('/login', { email, password });
+    // const response = await axios.post('/login', { email, password });
+    const response = await axios.post('https://v1backendcasasamilia-production.up.railway.app/login', { email, password });
     return response.data; // Devuelve solo los datos relevantes
   } catch (error) {
     console.error('Error en login:', error);
