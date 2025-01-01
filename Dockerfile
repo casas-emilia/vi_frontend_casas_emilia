@@ -1,29 +1,32 @@
-# Usa una imagen base oficial de Node.js para construcción
+# Usa una imagen base oficial de Node.js para construir el proyecto
 FROM node:18-alpine AS builder
 
-# Establece el directorio de trabajo
+# Instala herramientas necesarias para construir dependencias nativas
+RUN apk add --no-cache python3 make g++
+
+# Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copia solo los archivos necesarios para instalar dependencias
+# Copia los archivos esenciales para instalar dependencias
 COPY package*.json ./
 
-# Instala dependencias sin las de desarrollo
+# Instala las dependencias sin las devDependencies
 RUN npm ci --omit=dev
 
-# Copia el resto del código fuente
+# Copia el resto del código fuente al contenedor
 COPY . .
 
-# Compila el proyecto
+# Construye la aplicación con Vite
 RUN npm run build
 
-# Usa una imagen ligera para servir los archivos estáticos
+# Usa una imagen ligera de NGINX para servir los archivos estáticos
 FROM nginx:alpine
 
-# Copia los archivos estáticos construidos al contenedor
+# Copia los archivos estáticos generados al contenedor NGINX
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expone el puerto 80
+# Expone el puerto 80 para servir la aplicación
 EXPOSE 80
 
-# Configura NGINX para usar el puerto
+# Comando por defecto para ejecutar NGINX
 CMD ["nginx", "-g", "daemon off;"]
