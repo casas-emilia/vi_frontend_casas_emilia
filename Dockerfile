@@ -2,7 +2,7 @@
 FROM node:18-alpine AS builder
 
 # Instala herramientas necesarias para construir dependencias nativas
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ bash
 
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
@@ -10,8 +10,8 @@ WORKDIR /app
 # Copia los archivos esenciales para instalar dependencias
 COPY package*.json ./
 
-# Instala las dependencias sin las devDependencies
-RUN npm ci --omit=dev
+# Instala las dependencias (incluidas las de desarrollo)
+RUN npm ci
 
 # Copia el resto del código fuente al contenedor
 COPY . .
