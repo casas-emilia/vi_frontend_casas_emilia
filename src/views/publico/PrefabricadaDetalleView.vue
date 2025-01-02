@@ -88,7 +88,23 @@ const nextImage = () => {
   }
 };
 
-const handleCarouselSwipe = (direction) => {
+/* const handleCarouselSwipe = (direction) => {
+  if (direction === 'left') {
+    nextImage();
+  } else if (direction === 'right') {
+    prevImage();
+  }
+}; */
+
+const handleCarouselSwipe = (direction, event) => {
+  // Prevenir el comportamiento por defecto para evitar conflictos
+  if (event) {
+    event.preventDefault();
+  }
+
+  // Asegurarse de que tenemos imágenes para navegar
+  if (!prefabricada.value?.imagenes?.length) return;
+
   if (direction === 'left') {
     nextImage();
   } else if (direction === 'right') {
@@ -190,15 +206,15 @@ const getFeatureIcon = (clave) => {
                 </div>
 
                 <!-- Carousel Items -->
-                <div class="carousel-inner">
-                  <div v-for="(imagen, index) in prefabricada.imagenes" 
-                       :key="index"
-                       class="carousel-item"
-                       :class="{ active: index === carouselIndex }">
-                    <img :src="imagen" 
-                         :alt="`Vista ${index + 1}`"
-                         class="d-block w-100"
-                         @click="openLightbox(index)">
+                <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
+                  <div id="imageCarousel" 
+                      class="carousel slide shadow-lg rounded" 
+                      data-bs-ride="carousel"
+                      v-touch:swipe="handleCarouselSwipe"
+                      v-touch:swipe.left="() => handleCarouselSwipe('left')"
+                      v-touch:swipe.right="() => handleCarouselSwipe('right')"
+                      v-touch:swipe.options="{ threshold: 50 }">
+                    <!-- ... (resto del carousel sin cambios) -->
                   </div>
                 </div>
 
@@ -289,10 +305,12 @@ const getFeatureIcon = (clave) => {
 
       <!-- Lightbox -->
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
-           class="lightbox" 
-           @click="closeLightbox"
-           v-touch:swipe.left="nextImage"
-           v-touch:swipe.right="prevImage">
+        class="lightbox" 
+        @click="closeLightbox"
+        v-touch:swipe="handleCarouselSwipe"
+        v-touch:swipe.left="() => handleCarouselSwipe('left')"
+        v-touch:swipe.right="() => handleCarouselSwipe('right')"
+        v-touch:swipe.options="{ threshold: 50 }">
         <button class="close-button" @click="closeLightbox">
           <i class="fas fa-times"></i>
         </button>
@@ -425,6 +443,17 @@ const getFeatureIcon = (clave) => {
   background-color: #007bff;
   opacity: 1;
   transform: scale(1.2);
+}
+
+/* Añadir estos estilos para mejorar la experiencia táctil */
+.carousel, .lightbox {
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.carousel img, .lightbox img {
+  pointer-events: none; /* Previene problemas con el arrastre de imágenes */
 }
 
 @media (max-width: 768px) {
