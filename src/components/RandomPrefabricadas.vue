@@ -13,6 +13,10 @@ const error = ref(null);
 const baseURL = "https://v1backendcasasamilia-production.up.railway.app";
 const router = useRouter();
 
+const formatPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 const getPrefabricadas = async () => {
   try {
     loading.value = true;
@@ -160,7 +164,7 @@ onUnmounted(stopInterval);
                   >
                     {{ precio?.nombre_precio }}
                     <span class="badge bg-secondary rounded-pill">
-                      ${{ precio?.valor_prefabricada }}
+                      ${{ formatPrice(precio?.valor_prefabricada) }}
                     </span>
                   </li>
                 </ul>
@@ -269,5 +273,4 @@ onUnmounted(stopInterval);
 .ribbon-red {
   background-color: #d32f2f;
 }
-
 </style>

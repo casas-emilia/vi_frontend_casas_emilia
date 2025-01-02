@@ -21,6 +21,10 @@ const error = ref(null);
 const page = ref(1);
 const loadingMore = ref(false);
 
+const formatPrice = (price) => {
+  return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 // Cargar datos iniciales
 const loadInitialData = async () => {
   try {
@@ -247,7 +251,7 @@ onMounted(loadInitialData);
                   >
                     {{ precio?.nombre_precio || 'Precio sin nombre' }}
                     <span class="badge bg-secondary rounded-pill">
-                      ${{ precio?.valor_prefabricada || 0 }}
+                      ${{ formatPrice(precio?.valor_prefabricada || 0) }}
                     </span>
                   </li>
                 </ul>

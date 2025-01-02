@@ -4,24 +4,24 @@
       <router-link class="navbar-brand" to="/administracionPrefabricadasManager">
         <i class="fas fa-tools me-2"></i>Administración
       </router-link>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" @click="toggleNavbar" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div :class="['collapse navbar-collapse', { 'show': isNavbarOpen }]" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item" v-for="route in adminRoutes" :key="route.name">
-            <router-link :to="{ name: route.name }" class="nav-link" active-class="active">
+            <router-link :to="{ name: route.name }" class="nav-link" active-class="active" @click="closeNavbar">
               <i :class="route.icon" class="me-1"></i>{{ route.title }}
             </router-link>
           </li>
         </ul>
         <div class="d-flex align-items-center">
           <img :src="userProfileImage" alt="Profile" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-          <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="dropdown position-relative">
+            <button class="btn btn-light dropdown-toggle" type="button" @click="toggleDropdown" aria-expanded="false">
               {{ userName }}
             </button>
-            <ul class="dropdown-menu dropdown-menu-end animate__animated animate__fadeIn" aria-labelledby="dropdownMenuButton">
+            <ul :class="['dropdown-menu dropdown-menu-end animate__animated animate__fadeIn', { 'show': isDropdownOpen }]" @click="closeDropdown">
               <li>
                 <router-link class="dropdown-item" :to="{ name: 'administracionDatosUsuario' }">
                   <i class="fas fa-user-edit me-2"></i> Actualizar datos
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -51,6 +51,8 @@ import { getUserInfo, removeAuthToken, logout as authLogout } from '@/utils/auth
 const router = useRouter();
 const userName = ref('');
 const userProfileImage = ref('');
+const isNavbarOpen = ref(false);
+const isDropdownOpen = ref(false);
 
 const adminRoutes = [
   { name: 'administracionTipos', title: 'Tipos', icon: 'fas fa-list' },
@@ -71,7 +73,6 @@ onMounted(async () => {
   const userInfo = getUserInfo();
   if (userInfo) {
     try {
-      // const response = await axios.get(`http://localhost:8080/administracion/empresas/1/usuarios/${userInfo.userId}`);
       const response = await axios.get(`https://v1backendcasasamilia-production.up.railway.app/administracion/empresas/1/usuarios/${userInfo.userId}`);
       userName.value = `${response.data.usuario.primer_nombre} ${response.data.usuario.primer_apellido}`;
       userProfileImage.value = response.data.usuario.image || '/path/to/default/image.jpg';
@@ -79,19 +80,42 @@ onMounted(async () => {
       console.error('Error fetching user data:', error);
     }
   }
+
+  document.addEventListener('click', handleOutsideClick);
 });
 
+onUnmounted(() => {
+  document.removeEventListener('click', handleOutsideClick);
+});
+
+const toggleNavbar = () => {
+  isNavbarOpen.value = !isNavbarOpen.value;
+};
+
+const closeNavbar = () => {
+  isNavbarOpen.value = false;
+};
+
+const toggleDropdown = (event) => {
+  event.stopPropagation();
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false;
+};
+
+const handleOutsideClick = (event) => {
+  const dropdown = document.querySelector('.dropdown');
+  if (dropdown && !dropdown.contains(event.target)) {
+    closeDropdown();
+  }
+};
+
 const logout = () => {
-  // Llamar a la función authLogout para limpiar el almacenamiento local
   authLogout();
-
-  // Eliminar el token de autorización de las cabeceras de Axios
   delete axios.defaults.headers.common['Authorization'];
-
-  // Redirigir al usuario a la página de inicio de sesión
   router.push('/login');
-
-  // Mostrar un mensaje de éxito
   Swal.fire({
     icon: 'success',
     title: 'Sesión cerrada',
@@ -103,10 +127,6 @@ const logout = () => {
 </script>
 
 <style scoped>
-/* @import 'bootstrap/dist/css/bootstrap.min.css';
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-@import 'animate.css/animate.min.css'; */
-
 .navbar {
   padding: 0.5rem 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -128,6 +148,21 @@ const logout = () => {
 .nav-link.active {
   background-color: rgba(255, 255, 255, 0.2);
   font-weight: bold;
+}
+
+.dropdown-menu {
+  min-width: 200px;
+  padding: 0.5rem 0;
+  right: 0;
+  left: auto;
+}
+
+@media (min-width: 992px) {
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    z-index: 1000;
+  }
 }
 
 .dropdown-menu {
@@ -158,4 +193,40 @@ const logout = () => {
   color: #0056b3;
   background-color: #f8f9fa;
 }
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    transition: all 0.3s ease-in-out;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .navbar-collapse.show {
+    max-height: 100vh;
+  }
+
+  .dropdown-menu {
+    position: static !important;
+    float: none;
+    width: auto;
+    margin-top: 0;
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .dropdown-menu.show {
+    display: block;
+  }
+
+  .dropdown-item {
+    color: #fff;
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
 </style>
+

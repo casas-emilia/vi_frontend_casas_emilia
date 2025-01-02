@@ -1,227 +1,226 @@
 <template>
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="card shadow">
-            <div class="card-body">
-              <h2 class="text-center mb-4">
-                <i class="fas fa-user-circle"></i> Perfil de Usuario
-              </h2>
-              <form @submit.prevent="updateProfile">
-                <!-- User Profile Section -->
-                <h4 class="mb-3">Información Personal</h4>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card shadow">
+          <div class="card-body">
+            <h2 class="text-center mb-4">
+              <i class="fas fa-user-circle"></i> Perfil de Usuario
+            </h2>
+            <form @submit.prevent="updateProfile">
+              <!-- User Profile Section -->
+              <h4 class="mb-3">Información Personal</h4>
+              <div class="mb-3">
+                <label for="primerNombre" class="form-label">Primer Nombre</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="primerNombre"
+                  v-model="userProfile.primer_nombre"
+                  required
+                >
+              </div>
+              <div class="mb-3">
+                <label for="segundoNombre" class="form-label">Segundo Nombre</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="segundoNombre"
+                  v-model="userProfile.segundo_nombre"
+                >
+              </div>
+              <div class="mb-3">
+                <label for="primerApellido" class="form-label">Primer Apellido</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="primerApellido"
+                  v-model="userProfile.primer_apellido"
+                  required
+                >
+              </div>
+              <div class="mb-3">
+                <label for="segundoApellido" class="form-label">Segundo Apellido</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="segundoApellido"
+                  v-model="userProfile.segundo_apellido"
+                >
+              </div>
+              <div class="mb-3">
+                <label for="image" class="form-label">Imagen de Perfil</label>
+                <input
+                  type="file"
+                  class="form-control"
+                  id="image"
+                  @change="handleImageUpload"
+                  accept="image/*"
+                >
+              </div>
+              <div v-if="imagePreview" class="mb-3">
+                <img 
+                  :src="imagePreview" 
+                  alt="Profile Image" 
+                  class="img-thumbnail" 
+                  style="max-width: 200px;"
+                >
+              </div>
+
+              <!-- Contact Information Section -->
+              <h4 class="mb-3 mt-4">Información de Contacto</h4>
+              <div v-for="(contact, index) in userContacts" :key="index" class="mb-4 p-3 border rounded">
                 <div class="mb-3">
-                  <label for="primerNombre" class="form-label">Primer Nombre</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="primerNombre"
-                    v-model="userProfile.primer_nombre"
-                    required
-                  >
-                </div>
-                <div class="mb-3">
-                  <label for="segundoNombre" class="form-label">Segundo Nombre</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="segundoNombre"
-                    v-model="userProfile.segundo_nombre"
-                  >
-                </div>
-                <div class="mb-3">
-                  <label for="primerApellido" class="form-label">Primer Apellido</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="primerApellido"
-                    v-model="userProfile.primer_apellido"
-                    required
-                  >
-                </div>
-                <div class="mb-3">
-                  <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="segundoApellido"
-                    v-model="userProfile.segundo_apellido"
-                  >
-                </div>
-                <div class="mb-3">
-                  <label for="image" class="form-label">Imagen de Perfil</label>
-                  <input
-                    type="file"
-                    class="form-control"
-                    id="image"
-                    @change="handleImageUpload"
-                    accept="image/*"
-                  >
-                </div>
-                <div v-if="userProfile.image" class="mb-3">
-                  <img 
-                    :src="imagePreview" 
-                    alt="Profile Image" 
-                    class="img-thumbnail" 
-                    style="max-width: 200px;"
-                  >
-                </div>
-  
-                <!-- Contact Information Section -->
-                <h4 class="mb-3 mt-4">Información de Contacto</h4>
-                <div v-for="(contact, index) in userContacts" :key="index" class="mb-4 p-3 border rounded">
-                  <div class="mb-3">
-                    <label :for="'emailLaboral' + index" class="form-label">Email Laboral</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      :id="'emailLaboral' + index"
-                      v-model="contact.email_laboral"
-                      required
-                    >
-                  </div>
-                  <div class="mb-3">
-                    <label :for="'celularLaboral' + index" class="form-label">Celular Laboral</label>
-                    <input
-                      type="tel"
-                      class="form-control"
-                      :id="'celularLaboral' + index"
-                      v-model="contact.celular_laboral"
-                      required
-                    >
-                  </div>
-                  <div class="mb-3">
-                    <label :for="'direccionLaboral' + index" class="form-label">Dirección Laboral</label>
-                    <input
-                      type="text"
-                      class="form-control"
-                      :id="'direccionLaboral' + index"
-                      v-model="contact.direccion_laboral"
-                    >
-                  </div>
-                  <button type="button" class="btn btn-danger" @click="removeContact(index)">
-                    <i class="fas fa-trash-alt"></i> Eliminar Contacto
-                  </button>
-                </div>
-                <button type="button" class="btn btn-success mb-4" @click="addContact">
-                  <i class="fas fa-plus"></i> Agregar Contacto
-                </button>
-  
-                <!-- Credentials Section -->
-                <h4 class="mb-3">Credenciales de Acceso</h4>
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email de Acceso</label>
+                  <label :for="'emailLaboral' + index" class="form-label">Email Laboral</label>
                   <input
                     type="email"
                     class="form-control"
-                    id="email"
-                    v-model="userCredentials.email"
+                    :id="'emailLaboral' + index"
+                    v-model="contact.email_laboral"
                     required
                   >
                 </div>
                 <div class="mb-3">
-                  <label for="password" class="form-label">Nueva Contraseña (dejar en blanco si no desea cambiarla)</label>
+                  <label :for="'celularLaboral' + index" class="form-label">Celular Laboral</label>
                   <input
-                    type="password"
+                    type="tel"
                     class="form-control"
-                    id="password"
-                    v-model="userCredentials.password"
+                    :id="'celularLaboral' + index"
+                    v-model="contact.celular_laboral"
+                    required
                   >
                 </div>
-                <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
-                  <i class="fas fa-save me-2"></i>
-                  {{ isLoading ? 'Actualizando...' : 'Actualizar Perfil' }}
+                <div class="mb-3">
+                  <label :for="'direccionLaboral' + index" class="form-label">Dirección Laboral</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    :id="'direccionLaboral' + index"
+                    v-model="contact.direccion_laboral"
+                  >
+                </div>
+                <button type="button" class="btn btn-danger" @click="removeContact(index)">
+                  <i class="fas fa-trash-alt"></i> Eliminar Contacto
                 </button>
-              </form>
-            </div>
+              </div>
+              <button type="button" class="btn btn-success mb-4" @click="addContact">
+                <i class="fas fa-plus"></i> Agregar Contacto
+              </button>
+
+              <!-- Credentials Section -->
+              <h4 class="mb-3">Credenciales de Acceso</h4>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email de Acceso</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  v-model="userCredentials.email"
+                  required
+                >
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Nueva Contraseña (dejar en blanco si no desea cambiarla)</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  v-model="userCredentials.password"
+                >
+              </div>
+              <button type="submit" class="btn btn-primary w-100" :disabled="isLoading">
+                <i class="fas fa-save me-2"></i>
+                {{ isLoading ? 'Actualizando...' : 'Actualizar Perfil' }}
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, reactive, computed, onMounted } from 'vue'
-  import axios from 'axios'
-  import Swal from 'sweetalert2'
-  import { getUserInfo } from '@/utils/auth'
-  
-  const userProfile = reactive({
-    primer_nombre: '',
-    segundo_nombre: '',
-    primer_apellido: '',
-    segundo_apellido: '',
-    image: null
-  })
-  
-  const userContacts = ref([])
-  
-  const userCredentials = reactive({
-    id: null,
-    email: '',
-    password: ''
-  })
-  
-  const isLoading = ref(false)
-  const empresaId = ref(1) // Assuming empresaId is 1
-  // const baseUrl = `http://localhost:8080/administracion/empresas/`
-  const baseUrl = `https://v1backendcasasamilia-production.up.railway.app/administracion/empresas/`
-  const userId = ref(null)
-  
-  const imagePreview = computed(() => {
-    if (userProfile.image instanceof File) {
-      return URL.createObjectURL(userProfile.image)
-    }
-    return userProfile.image
-  })
-  
-  onMounted(async () => {
-    const userInfo = getUserInfo()
-    userId.value = userInfo.userId
-    await fetchUserData()
-  })
-  
-  const fetchUserData = async () => {
-    try {
-      const [profileResponse, contactResponse, credentialsResponse] = await Promise.all([
-        axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}`),
-        axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}/contactos/`),
-        axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}/credenciales/`)
-      ])
-  
-      Object.assign(userProfile, profileResponse.data.usuario)
-      userContacts.value = contactResponse.data.contactos
-      Object.assign(userCredentials, {
-        id: credentialsResponse.data.credenciales.id,
-        email: credentialsResponse.data.credenciales.email,
-        password: ''
-      })
-    } catch (error) {
-      console.error('Error fetching user data:', error)
-      Swal.fire('Error', 'No se pudo cargar la información del usuario', 'error')
-    }
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import axios from 'axios'
+import Swal from 'sweetalert2'
+import { getUserInfo } from '@/utils/auth'
+
+const userProfile = reactive({
+  primer_nombre: '',
+  segundo_nombre: '',
+  primer_apellido: '',
+  segundo_apellido: '',
+  image: null
+})
+
+const userContacts = ref([])
+
+const userCredentials = reactive({
+  id: null,
+  email: '',
+  password: ''
+})
+
+const isLoading = ref(false)
+const empresaId = ref(1) // Assuming empresaId is 1
+const baseUrl = `https://v1backendcasasamilia-production.up.railway.app/administracion/empresas/`
+const userId = ref(null)
+
+const imagePreview = computed(() => {
+  if (userProfile.image instanceof File) {
+    return URL.createObjectURL(userProfile.image)
   }
-  
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      userProfile.image = file
-    }
-  }
-  
-  const addContact = () => {
-    userContacts.value.push({
-      email_laboral: '',
-      celular_laboral: '',
-      direccion_laboral: ''
+  return userProfile.image
+})
+
+onMounted(async () => {
+  const userInfo = getUserInfo()
+  userId.value = userInfo.userId
+  await fetchUserData()
+})
+
+const fetchUserData = async () => {
+  try {
+    const [profileResponse, contactResponse, credentialsResponse] = await Promise.all([
+      axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}`).catch(() => ({ data: { usuario: {} } })),
+      axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}/contactos/`).catch(() => ({ data: { contactos: [] } })),
+      axios.get(`${baseUrl}${empresaId.value}/usuarios/${userId.value}/credenciales/`).catch(() => ({ data: { credenciales: {} } }))
+    ])
+
+    Object.assign(userProfile, profileResponse.data.usuario)
+    userContacts.value = contactResponse.data.contactos
+    Object.assign(userCredentials, {
+      id: credentialsResponse.data.credenciales.id,
+      email: credentialsResponse.data.credenciales.email,
+      password: ''
     })
+  } catch (error) {
+    console.error('Error fetching user data:', error)
+    Swal.fire('Error', 'No se pudo cargar la información del usuario', 'error')
   }
-  
-  const removeContact = (index) => {
-    userContacts.value.splice(index, 1)
+}
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    userProfile.image = file
   }
-  
-  const updateProfile = async () => {
+}
+
+const addContact = () => {
+  userContacts.value.push({
+    email_laboral: '',
+    celular_laboral: '',
+    direccion_laboral: ''
+  })
+}
+
+const removeContact = (index) => {
+  userContacts.value.splice(index, 1)
+}
+
+const updateProfile = async () => {
   isLoading.value = true
   try {
     // Update user profile
@@ -255,7 +254,6 @@
         email: userCredentials.email
       }
       
-      // Only include password if it's not empty
       if (userCredentials.password && userCredentials.password.trim() !== '') {
         credentialsData.password = userCredentials.password
       }
@@ -269,8 +267,6 @@
         }
         throw new Error('Error al actualizar las credenciales')
       }
-    } else {
-      console.warn('Credentials ID is missing. Skipping credentials update.')
     }
 
     Swal.fire('Éxito', 'Perfil actualizado correctamente', 'success')
@@ -281,34 +277,25 @@
     isLoading.value = false
   }
 }
-  </script>
-  
-  <style scoped>
-/*   @import 'bootstrap/dist/css/bootstrap.min.css';
-  @import '@fortawesome/fontawesome-free/css/all.min.css'; */
-  
-  .card {
-    border-radius: 1rem;
-    overflow: hidden;
-  }
-  
-  .card-body {
-    padding: 2rem;
-  }
-  
-  .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-  }
-  
-  .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-  }
-  </style>
-  
-  
-  
+</script>
 
+<style scoped>
+.card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
 
+.card-body {
+  padding: 2rem;
+}
 
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+</style>

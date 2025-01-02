@@ -188,6 +188,14 @@ const getFeatureIcon = (clave) => {
                   </div>
                 </div>
 
+                <!-- Navigation Touch -->
+                <div v-if="lightboxOpen && prefabricada.imagenes?.length"
+                    class="lightbox"
+                    @click="closeLightbox"
+                    v-touch:swipe.left="nextImage" v-touch:swipe.right="prevImage">
+                  <img :src="prefabricada.imagenes[currentImageIndex]" class="lightbox-image" @click.stop>
+                </div>
+
                 <!-- Navigation Buttons -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>

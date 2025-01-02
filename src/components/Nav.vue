@@ -8,6 +8,16 @@ const navItems = ref([
     { text: 'Contacto', route: 'contactos', icon: 'fas fa-envelope' },
     { text: 'Portafolio', route: 'blog', icon: 'fas fa-briefcase' }
 ])
+
+const isNavbarOpen = ref(false)
+
+const toggleNavbar = () => {
+    isNavbarOpen.value = !isNavbarOpen.value
+}
+
+const closeNavbar = () => {
+    isNavbarOpen.value = false
+}
 </script>
 
 <template>
@@ -17,17 +27,18 @@ const navItems = ref([
                 style="color: #0f2b5e; font-family: 'Cabin', sans-serif;">
                 <img src="/img/logo_casas_emilia_v1.png" alt="home" width="90" height="70">
             </RouterLink>
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            <button class="navbar-toggler custom-toggler" type="button" @click="toggleNavbar"
+                aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent" style="font-family: 'Cabin', sans-serif;">
+            <div :class="['collapse navbar-collapse', { 'show': isNavbarOpen }]" id="navbarSupportedContent" style="font-family: 'Cabin', sans-serif;">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li v-for="(item, index) in navItems" :key="index" class="nav-item mx-2">
                         <RouterLink :to="{ name: item.route }" 
                             :class="['nav-link active fw-bold nav-item-hover d-flex align-items-center', 
-                                     {'highlight-nav-item': item.highlight}]">
+                                     {'highlight-nav-item': item.highlight}]"
+                            @click="closeNavbar">
                             <i :class="[item.icon, 'me-2']"></i>
                             {{ item.text }}
                         </RouterLink>
@@ -86,4 +97,17 @@ const navItems = ref([
 .custom-toggler.navbar-toggler {
     border-color: #007bff;
 }
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        transition: max-height 0.3s ease-in-out;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .navbar-collapse.show {
+        max-height: 100vh;
+    }
+}
 </style>
+
