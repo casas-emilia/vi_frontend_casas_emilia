@@ -161,7 +161,7 @@ const getFeatureIcon = (clave) => {
 
             <!-- Image Carousel -->
             <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
-              <div id="imageCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel">
+              <div id="imageCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel" v-touch:swipe.left="nextImage" v-touch:swipe.right="prevImage">
                 <!-- Add Indicators -->
                 <div class="carousel-indicators">
                   <button v-for="(imagen, index) in prefabricada.imagenes"
