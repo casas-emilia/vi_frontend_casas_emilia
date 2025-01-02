@@ -9,9 +9,9 @@ const loading = ref(true);
 const error = ref(null);
 const lightboxOpen = ref(false);
 const currentImageIndex = ref(0);
+const carouselIndex = ref(0);
 
 const route = useRoute();
-// const baseURL = "http://localhost:8080/empresas/1";
 const baseURL = "https://v1backendcasasamilia-production.up.railway.app/empresas/1";
 
 onMounted(async () => {
@@ -77,12 +77,22 @@ const closeLightbox = () => {
 const prevImage = () => {
   if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value - 1 + prefabricada.value.imagenes.length) % prefabricada.value.imagenes.length;
+    carouselIndex.value = currentImageIndex.value;
   }
 };
 
 const nextImage = () => {
   if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value + 1) % prefabricada.value.imagenes.length;
+    carouselIndex.value = currentImageIndex.value;
+  }
+};
+
+const handleCarouselSwipe = (direction) => {
+  if (direction === 'left') {
+    nextImage();
+  } else if (direction === 'right') {
+    prevImage();
   }
 };
 
@@ -161,7 +171,11 @@ const getFeatureIcon = (clave) => {
 
             <!-- Image Carousel -->
             <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
-              <div id="imageCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel" v-touch:swipe.left="nextImage" v-touch:swipe.right="prevImage">
+              <div id="imageCarousel" 
+                   class="carousel slide shadow-lg rounded" 
+                   data-bs-ride="carousel"
+                   v-touch:swipe.left="() => handleCarouselSwipe('left')"
+                   v-touch:swipe.right="() => handleCarouselSwipe('right')">
                 <!-- Add Indicators -->
                 <div class="carousel-indicators">
                   <button v-for="(imagen, index) in prefabricada.imagenes"
@@ -169,8 +183,8 @@ const getFeatureIcon = (clave) => {
                           type="button"
                           data-bs-target="#imageCarousel"
                           :data-bs-slide-to="index"
-                          :class="{ active: index === 0 }"
-                          :aria-current="index === 0"
+                          :class="{ active: index === carouselIndex }"
+                          :aria-current="index === carouselIndex"
                           :aria-label="`Slide ${index + 1}`">
                   </button>
                 </div>
@@ -178,30 +192,22 @@ const getFeatureIcon = (clave) => {
                 <!-- Carousel Items -->
                 <div class="carousel-inner">
                   <div v-for="(imagen, index) in prefabricada.imagenes" 
-                      :key="index"
-                      class="carousel-item"
-                      :class="{ active: index === 0 }">
+                       :key="index"
+                       class="carousel-item"
+                       :class="{ active: index === carouselIndex }">
                     <img :src="imagen" 
-                        :alt="`Vista ${index + 1}`"
-                        class="d-block w-100"
-                        @click="openLightbox(index)">
+                         :alt="`Vista ${index + 1}`"
+                         class="d-block w-100"
+                         @click="openLightbox(index)">
                   </div>
                 </div>
 
-                <!-- Navigation Touch -->
-                <div v-if="lightboxOpen && prefabricada.imagenes?.length"
-                    class="lightbox"
-                    @click="closeLightbox"
-                    v-touch:swipe.left="nextImage" v-touch:swipe.right="prevImage">
-                  <img :src="prefabricada.imagenes[currentImageIndex]" class="lightbox-image" @click.stop>
-                </div>
-
                 <!-- Navigation Buttons -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" @click="prevImage">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Anterior</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" @click="nextImage">
                   <span class="carousel-control-next-icon" aria-hidden="true"></span>
                   <span class="visually-hidden">Siguiente</span>
                 </button>
@@ -212,14 +218,13 @@ const getFeatureIcon = (clave) => {
       </section>
 
       <!-- Description Section -->
-    <section v-if="prefabricada.descripcion && prefabricada.descripcion.trim().length" 
-            class="py-5 bg-white">
-      <div class="container">
-        <h2 class="text-center mb-5 fw-bold text-primary">Descripción</h2>
-        <p class="text-muted">{{ prefabricada.descripcion }}</p>
-      </div>
-    </section>
-
+      <section v-if="prefabricada.descripcion && prefabricada.descripcion.trim().length" 
+              class="py-5 bg-white">
+        <div class="container">
+          <h2 class="text-center mb-5 fw-bold text-primary">Descripción</h2>
+          <p class="text-muted">{{ prefabricada.descripcion }}</p>
+        </div>
+      </section>
 
       <!-- Features Section -->
       <section v-if="prefabricada.caracteristicas?.length" 
@@ -285,7 +290,9 @@ const getFeatureIcon = (clave) => {
       <!-- Lightbox -->
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
            class="lightbox" 
-           @click="closeLightbox">
+           @click="closeLightbox"
+           v-touch:swipe.left="nextImage"
+           v-touch:swipe.right="prevImage">
         <button class="close-button" @click="closeLightbox">
           <i class="fas fa-times"></i>
         </button>
@@ -297,7 +304,8 @@ const getFeatureIcon = (clave) => {
         </button>
         <img :src="prefabricada.imagenes[currentImageIndex]" 
              :alt="`Vista ampliada ${currentImageIndex + 1}`"
-             class="lightbox-image">
+             class="lightbox-image"
+             @click.stop>
       </div>
     </div>
   </div>
