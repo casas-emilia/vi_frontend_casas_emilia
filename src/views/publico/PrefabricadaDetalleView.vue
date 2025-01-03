@@ -201,6 +201,7 @@ const getFeatureIcon = (clave) => {
                 </div>
 
 
+
                 <!-- Navigation Buttons -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -288,26 +289,25 @@ const getFeatureIcon = (clave) => {
       <EjecutivosVentas />
 
       <!-- Lightbox -->
-      <div class="carousel-inner">
-        <div v-for="(imagen, index) in prefabricada.imagenes" 
-            :key="index"
-            class="carousel-item"
-            :class="{ active: currentImageIndex === index }">
-            <button class="close-button" @click="closeLightbox">
-          <i class="fas fa-times"></i>
-        </button>
-        <button class="nav-button prev" @click.stop="prevImage">
+      <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
+        class="lightbox" 
+        @click="closeLightbox"
+        v-touch:swipe.left="nextImage"
+        v-touch:swipe.right="prevImage">
+      <button class="close-button" @click.stop="closeLightbox">
+        <i class="fas fa-times"></i>
+      </button>
+      <button class="nav-button prev" @click.stop="prevImage">
           <i class="fas fa-chevron-left"></i>
         </button>
         <button class="nav-button next" @click.stop="nextImage">
           <i class="fas fa-chevron-right"></i>
         </button>
-          <img :src="imagen" 
-              :alt="`Vista ${index + 1}`"
-              class="d-block w-100"
-              @click="openLightbox(index)">
-        </div>
-      </div>
+      <img :src="prefabricada.imagenes[currentImageIndex]" 
+          :alt="`Vista ampliada ${currentImageIndex + 1}`"
+          class="lightbox-image">
+    </div>
+
 
 
 
