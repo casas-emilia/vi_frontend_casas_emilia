@@ -369,7 +369,7 @@ const getFeatureIcon = (clave) => {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.lightbox {
+/* .lightbox {
   position: fixed;
   top: 0;
   left: 0;
@@ -380,7 +380,7 @@ const getFeatureIcon = (clave) => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
+} */
 
 .lightbox-image {
   max-width: 90%;
