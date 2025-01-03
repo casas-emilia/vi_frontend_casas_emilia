@@ -79,29 +79,21 @@ const logState = () => {
   console.log('Images:', prefabricada.value?.imagenes);
 };
 
-const transitioning = ref(false);
-
-const startTransition = () => {
-  transitioning.value = true;
-};
-
-const endTransition = () => {
-  transitioning.value = false;
-};
-
+// Llama a logState en `nextImage` y `prevImage`
 const prevImage = () => {
-  if (prefabricada.value?.imagenes?.length > 0 && !transitioning.value) {
-    startTransition();
+  if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value - 1 + prefabricada.value.imagenes.length) % prefabricada.value.imagenes.length;
+    logState();
   }
 };
 
 const nextImage = () => {
-  if (prefabricada.value?.imagenes?.length > 0 && !transitioning.value) {
-    startTransition();
+  if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value + 1) % prefabricada.value.imagenes.length;
+    logState();
   }
 };
+
 
 
 
@@ -296,26 +288,27 @@ const getFeatureIcon = (clave) => {
       <EjecutivosVentas />
 
       <!-- Lightbox -->
-      <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
-        class="lightbox"
-        @click="closeLightbox">
-      <button class="close-button" @click.stop="closeLightbox">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="image-wrapper"
-          :class="{ 'image-transition': transitioning }"
-          @transitionend="endTransition">
-        <img :src="prefabricada.imagenes[currentImageIndex]" 
-            :alt="`Vista ampliada ${currentImageIndex + 1}`"
-            class="lightbox-image">
+      <div class="carousel-inner">
+        <div v-for="(imagen, index) in prefabricada.imagenes" 
+            :key="index"
+            class="carousel-item"
+            :class="{ active: currentImageIndex === index }">
+            <button class="close-button" @click="closeLightbox">
+          <i class="fas fa-times"></i>
+        </button>
+        <button class="nav-button prev" @click.stop="prevImage">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="nav-button next" @click.stop="nextImage">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+          <img :src="imagen" 
+              :alt="`Vista ${index + 1}`"
+              class="d-block w-100"
+              @click="openLightbox(index)">
+        </div>
       </div>
-      <button class="nav-button prev" @click.stop="prevImage">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <button class="nav-button next" @click.stop="nextImage">
-        <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
+
 
 
 
@@ -381,11 +374,11 @@ const getFeatureIcon = (clave) => {
   z-index: 1000;
 }
 
-/* .lightbox-image {
+.lightbox-image {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-} */
+}
 
 .close-button,
 .nav-button {
@@ -437,28 +430,6 @@ const getFeatureIcon = (clave) => {
   background-color: #007bff;
   opacity: 1;
   transform: scale(1.2);
-}
-
-.image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.lightbox-image {
-  display: block;
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.image-transition .lightbox-image {
-  opacity: 0;
-  transform: translateX(-20px); /* O cambia a '20px' si es swipe hacia la derecha */
 }
 
 
