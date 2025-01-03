@@ -161,7 +161,8 @@ const getFeatureIcon = (clave) => {
 
             <!-- Image Carousel -->
             <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
-              <div id="imageCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel">
+              <div id="imageCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel"  v-touch:swipe.left="nextImage"
+              v-touch:swipe.right="prevImage">
                 <!-- Add Indicators -->
                 <div class="carousel-indicators">
                   <button v-for="(imagen, index) in prefabricada.imagenes"
@@ -276,21 +277,24 @@ const getFeatureIcon = (clave) => {
 
       <!-- Lightbox -->
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
-           class="lightbox" 
-           @click="closeLightbox">
-        <button class="close-button" @click="closeLightbox">
-          <i class="fas fa-times"></i>
-        </button>
-        <button class="nav-button prev" @click.stop="prevImage">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="nav-button next" @click.stop="nextImage">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        <img :src="prefabricada.imagenes[currentImageIndex]" 
-             :alt="`Vista ampliada ${currentImageIndex + 1}`"
-             class="lightbox-image">
-      </div>
+     class="lightbox" 
+     @click="closeLightbox"
+     v-touch:swipe.left="nextImage"
+     v-touch:swipe.right="prevImage">
+  <button class="close-button" @click="closeLightbox">
+    <i class="fas fa-times"></i>
+  </button>
+  <button class="nav-button prev" @click.stop="prevImage">
+    <i class="fas fa-chevron-left"></i>
+  </button>
+  <button class="nav-button next" @click.stop="nextImage">
+    <i class="fas fa-chevron-right"></i>
+  </button>
+  <img :src="prefabricada.imagenes[currentImageIndex]" 
+       :alt="`Vista ampliada ${currentImageIndex + 1}`"
+       class="lightbox-image">
+</div>
+
     </div>
   </div>
 </template>
