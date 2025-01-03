@@ -187,50 +187,45 @@ const getFeatureIcon = (clave) => {
 
             <!-- Image Carousel -->
             <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
-              <div id="imageCarousel" 
-                  class="carousel slide shadow-lg rounded" 
-                  data-bs-ride="carousel"
-                  v-touch:swipe="handleCarouselSwipe"
-                  v-touch:swipe.left="() => handleCarouselSwipe('left')"
-                  v-touch:swipe.right="() => handleCarouselSwipe('right')"
-                  v-touch:swipe.options="{ threshold: 50 }">
-                <!-- Add Indicators -->
-                <div class="carousel-indicators">
-                  <button v-for="(imagen, index) in prefabricada.imagenes"
-                          :key="index"
-                          type="button"
-                          data-bs-target="#imageCarousel"
-                          :data-bs-slide-to="index"
-                          :class="{ active: index === carouselIndex }"
-                          :aria-current="index === carouselIndex"
-                          :aria-label="`Slide ${index + 1}`">
-                  </button>
-                </div>
+    <div id="imageCarousel" 
+         class="carousel slide shadow-lg rounded" 
+         data-bs-ride="carousel"
+         v-touch:swipe.left="() => handleCarouselSwipe('left')"
+         v-touch:swipe.right="() => handleCarouselSwipe('right')">
+      <div class="carousel-indicators">
+        <button v-for="(imagen, index) in prefabricada.imagenes"
+                :key="index"
+                type="button"
+                data-bs-target="#imageCarousel"
+                :data-bs-slide-to="index"
+                :class="{ active: index === carouselIndex }"
+                :aria-current="index === carouselIndex"
+                :aria-label="`Slide ${index + 1}`">
+        </button>
+      </div>
 
-                <!-- Carousel Items -->
-                <div class="carousel-inner">
-                  <div v-for="(imagen, index) in prefabricada.imagenes" 
-                       :key="index"
-                       class="carousel-item"
-                       :class="{ active: index === carouselIndex }">
-                    <img :src="imagen" 
-                         :alt="`Vista ${index + 1}`"
-                         class="d-block w-100"
-                         @click="openLightbox(index)">
-                  </div>
-                </div>
+      <div class="carousel-inner">
+        <div v-for="(imagen, index) in prefabricada.imagenes" 
+             :key="index"
+             class="carousel-item"
+             :class="{ active: index === carouselIndex }">
+          <img :src="imagen" 
+               :alt="`Vista ${index + 1}`"
+               class="d-block w-100 carousel-image"
+               @click="openLightbox(index)">
+        </div>
+      </div>
 
-                <!-- Navigation Buttons -->
-                <button class="carousel-control-prev" type="button" @click="prevImage">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" @click="nextImage">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Siguiente</span>
-                </button>
-              </div>
-            </div>
+      <button class="carousel-control-prev" type="button" @click="prevImage">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button class="carousel-control-next" type="button" @click="nextImage">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+    </div>
+  </div>
           </div>
         </div>
       </section>
@@ -309,24 +304,22 @@ const getFeatureIcon = (clave) => {
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
        class="lightbox" 
        @click="closeLightbox"
-       v-touch:swipe="handleCarouselSwipe"
        v-touch:swipe.left="() => handleCarouselSwipe('left')"
-       v-touch:swipe.right="() => handleCarouselSwipe('right')"
-       v-touch:swipe.options="{ threshold: 50 }">
-        <button class="close-button" @click="closeLightbox">
-          <i class="fas fa-times"></i>
-        </button>
-        <button class="nav-button prev" @click.stop="prevImage">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="nav-button next" @click.stop="nextImage">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-        <img :src="prefabricada.imagenes[currentImageIndex]" 
-             :alt="`Vista ampliada ${currentImageIndex + 1}`"
-             class="lightbox-image"
-             @click.stop>
-      </div>
+       v-touch:swipe.right="() => handleCarouselSwipe('right')">
+    <button class="close-button" @click.stop="closeLightbox">
+      <i class="fas fa-times"></i>
+    </button>
+    <button class="nav-button prev" @click.stop="prevImage">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="nav-button next" @click.stop="nextImage">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+    <img :src="prefabricada.imagenes[currentImageIndex]" 
+         :alt="`Vista ampliada ${currentImageIndex + 1}`"
+         class="lightbox-image"
+         @click.stop>
+  </div>
     </div>
   </div>
 </template>
@@ -456,6 +449,30 @@ const getFeatureIcon = (clave) => {
 
 .carousel img, .lightbox img {
   pointer-events: none; /* Previene problemas con el arrastre de imágenes */
+}
+
+.carousel {
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.carousel-image {
+  cursor: pointer;
+}
+
+.lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  touch-action: pan-y pinch-zoom;
 }
 
 @media (max-width: 768px) {
