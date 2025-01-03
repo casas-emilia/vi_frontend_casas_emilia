@@ -74,17 +74,26 @@ const closeLightbox = () => {
   lightboxOpen.value = false;
 };
 
+const logState = () => {
+  console.log('Current Index:', currentImageIndex.value);
+  console.log('Images:', prefabricada.value?.imagenes);
+};
+
+// Llama a logState en `nextImage` y `prevImage`
 const prevImage = () => {
   if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value - 1 + prefabricada.value.imagenes.length) % prefabricada.value.imagenes.length;
+    logState();
   }
 };
 
 const nextImage = () => {
   if (prefabricada.value?.imagenes?.length > 0) {
     currentImageIndex.value = (currentImageIndex.value + 1) % prefabricada.value.imagenes.length;
+    logState();
   }
 };
+
 
 const getFeatureIcon = (clave) => {
   const iconMap = {
@@ -178,16 +187,17 @@ const getFeatureIcon = (clave) => {
 
                 <!-- Carousel Items -->
                 <div class="carousel-inner">
-                  <div v-for="(imagen, index) in prefabricada.imagenes" 
-                      :key="index"
-                      class="carousel-item"
-                      :class="{ active: index === 0 }">
-                    <img :src="imagen" 
-                        :alt="`Vista ${index + 1}`"
-                        class="d-block w-100"
-                        @click="openLightbox(index)">
-                  </div>
-                </div>
+  <div v-for="(imagen, index) in prefabricada.imagenes" 
+       :key="index"
+       class="carousel-item"
+       :class="{ active: currentImageIndex === index }">
+    <img :src="imagen" 
+         :alt="`Vista ${index + 1}`"
+         class="d-block w-100"
+         @click="openLightbox(index)">
+  </div>
+</div>
+
 
                 <!-- Navigation Buttons -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
@@ -281,19 +291,14 @@ const getFeatureIcon = (clave) => {
      @click="closeLightbox"
      v-touch:swipe.left="nextImage"
      v-touch:swipe.right="prevImage">
-  <button class="close-button" @click="closeLightbox">
+  <button class="close-button" @click.stop="closeLightbox">
     <i class="fas fa-times"></i>
-  </button>
-  <button class="nav-button prev" @click.stop="prevImage">
-    <i class="fas fa-chevron-left"></i>
-  </button>
-  <button class="nav-button next" @click.stop="nextImage">
-    <i class="fas fa-chevron-right"></i>
   </button>
   <img :src="prefabricada.imagenes[currentImageIndex]" 
        :alt="`Vista ampliada ${currentImageIndex + 1}`"
        class="lightbox-image">
 </div>
+
 
     </div>
   </div>

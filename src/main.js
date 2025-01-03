@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import createPersistedState from 'pinia-plugin-persistedstate'
 import axios from 'axios'
 import { setupAxiosInterceptors } from './utils/auth'
+import Vue3TouchEvents from 'vue3-touch-events'
 
 // Importaciones de estilos
 import '@fortawesome/fontawesome-free/css/all.min.css'
@@ -38,6 +39,10 @@ const token = localStorage.getItem('token')
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
+
+app.use(Vue3TouchEvents, {
+    disableClick: false, // Habilita clics además de gestos
+});
 
 const app = createApp(App)
 
