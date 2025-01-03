@@ -96,13 +96,7 @@ const nextImage = () => {
   }
 }; */
 
-const handleCarouselSwipe = (direction, event) => {
-  // Prevenir el comportamiento por defecto para evitar conflictos
-  if (event) {
-    event.preventDefault();
-  }
-
-  // Asegurarse de que tenemos imágenes para navegar
+const handleCarouselSwipe = (direction) => {
   if (!prefabricada.value?.imagenes?.length) return;
 
   if (direction === 'left') {
@@ -186,7 +180,7 @@ const getFeatureIcon = (clave) => {
             </div>
 
             <!-- Image Carousel -->
-            <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
+            <<div v-if="prefabricada.imagenes?.length" class="col-lg-6">
     <div id="imageCarousel" 
          class="carousel slide shadow-lg rounded" 
          data-bs-ride="carousel"
@@ -212,15 +206,15 @@ const getFeatureIcon = (clave) => {
           <img :src="imagen" 
                :alt="`Vista ${index + 1}`"
                class="d-block w-100 carousel-image"
-               @click="openLightbox(index)">
+               @click.stop="openLightbox(index)">
         </div>
       </div>
 
-      <button class="carousel-control-prev" type="button" @click="prevImage">
+      <button class="carousel-control-prev" type="button" @click.stop="prevImage">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Anterior</span>
       </button>
-      <button class="carousel-control-next" type="button" @click="nextImage">
+      <button class="carousel-control-next" type="button" @click.stop="nextImage">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Siguiente</span>
       </button>
@@ -303,9 +297,7 @@ const getFeatureIcon = (clave) => {
       <!-- Lightbox -->
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
        class="lightbox" 
-       @click="closeLightbox"
-       v-touch:swipe.left="() => handleCarouselSwipe('left')"
-       v-touch:swipe.right="() => handleCarouselSwipe('right')">
+       @click="closeLightbox">
     <button class="close-button" @click.stop="closeLightbox">
       <i class="fas fa-times"></i>
     </button>
@@ -474,6 +466,39 @@ const getFeatureIcon = (clave) => {
   z-index: 1000;
   touch-action: pan-y pinch-zoom;
 }
+
+.close-button,
+.nav-button {
+  position: absolute;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 1rem;
+  z-index: 1001;
+  pointer-events: auto !important;
+}
+
+.close-button:hover,
+.nav-button:hover {
+  color: #007bff;
+}
+
+.close-button {
+  top: 20px;
+  right: 20px;
+}
+
+.nav-button {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.prev { left: 20px; }
+.next { right: 20px; }
+
 
 @media (max-width: 768px) {
   .hero-section {
