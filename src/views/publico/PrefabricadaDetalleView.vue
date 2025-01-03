@@ -180,7 +180,7 @@ const getFeatureIcon = (clave) => {
             </div>
 
             <!-- Image Carousel -->
-            <<div v-if="prefabricada.imagenes?.length" class="col-lg-6">
+            <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
     <div id="imageCarousel" 
          class="carousel slide shadow-lg rounded" 
          data-bs-ride="carousel"
