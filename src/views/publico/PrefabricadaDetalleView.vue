@@ -381,11 +381,11 @@ const getFeatureIcon = (clave) => {
   z-index: 1000;
 }
 
-.lightbox-image {
+/* .lightbox-image {
   max-width: 90%;
   max-height: 90%;
   object-fit: contain;
-}
+} */
 
 .close-button,
 .nav-button {
