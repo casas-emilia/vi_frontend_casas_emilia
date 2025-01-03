@@ -40,13 +40,12 @@ if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
-app.use(Vue3TouchEvents, {
-    disableClick: false, // Habilita clics además de gestos
-});
-
 const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
+app.use(Vue3TouchEvents, {
+    disableClick: false, // Habilita clics además de gestos
+});
 
 app.mount('#app')
