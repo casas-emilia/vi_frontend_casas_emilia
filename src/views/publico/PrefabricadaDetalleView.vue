@@ -188,10 +188,12 @@ const getFeatureIcon = (clave) => {
             <!-- Image Carousel -->
             <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
               <div id="imageCarousel" 
-                   class="carousel slide shadow-lg rounded" 
-                   data-bs-ride="carousel"
-                   v-touch:swipe.left="() => handleCarouselSwipe('left')"
-                   v-touch:swipe.right="() => handleCarouselSwipe('right')">
+                  class="carousel slide shadow-lg rounded" 
+                  data-bs-ride="carousel"
+                  v-touch:swipe="handleCarouselSwipe"
+                  v-touch:swipe.left="() => handleCarouselSwipe('left')"
+                  v-touch:swipe.right="() => handleCarouselSwipe('right')"
+                  v-touch:swipe.options="{ threshold: 50 }">
                 <!-- Add Indicators -->
                 <div class="carousel-indicators">
                   <button v-for="(imagen, index) in prefabricada.imagenes"
@@ -203,19 +205,6 @@ const getFeatureIcon = (clave) => {
                           :aria-current="index === carouselIndex"
                           :aria-label="`Slide ${index + 1}`">
                   </button>
-                </div>
-
-                <!-- Carousel Items -->
-                <div v-if="prefabricada.imagenes?.length" class="col-lg-6">
-                  <div id="imageCarousel" 
-                      class="carousel slide shadow-lg rounded" 
-                      data-bs-ride="carousel"
-                      v-touch:swipe="handleCarouselSwipe"
-                      v-touch:swipe.left="() => handleCarouselSwipe('left')"
-                      v-touch:swipe.right="() => handleCarouselSwipe('right')"
-                      v-touch:swipe.options="{ threshold: 50 }">
-                    <!-- ... (resto del carousel sin cambios) -->
-                  </div>
                 </div>
 
                 <!-- Navigation Buttons -->
