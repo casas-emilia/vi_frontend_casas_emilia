@@ -207,6 +207,19 @@ const getFeatureIcon = (clave) => {
                   </button>
                 </div>
 
+                <!-- Carousel Items -->
+                <div class="carousel-inner">
+                  <div v-for="(imagen, index) in prefabricada.imagenes" 
+                       :key="index"
+                       class="carousel-item"
+                       :class="{ active: index === carouselIndex }">
+                    <img :src="imagen" 
+                         :alt="`Vista ${index + 1}`"
+                         class="d-block w-100"
+                         @click="openLightbox(index)">
+                  </div>
+                </div>
+
                 <!-- Navigation Buttons -->
                 <button class="carousel-control-prev" type="button" @click="prevImage">
                   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -294,12 +307,12 @@ const getFeatureIcon = (clave) => {
 
       <!-- Lightbox -->
       <div v-if="lightboxOpen && prefabricada.imagenes?.length" 
-        class="lightbox" 
-        @click="closeLightbox"
-        v-touch:swipe="handleCarouselSwipe"
-        v-touch:swipe.left="() => handleCarouselSwipe('left')"
-        v-touch:swipe.right="() => handleCarouselSwipe('right')"
-        v-touch:swipe.options="{ threshold: 50 }">
+       class="lightbox" 
+       @click="closeLightbox"
+       v-touch:swipe="handleCarouselSwipe"
+       v-touch:swipe.left="() => handleCarouselSwipe('left')"
+       v-touch:swipe.right="() => handleCarouselSwipe('right')"
+       v-touch:swipe.options="{ threshold: 50 }">
         <button class="close-button" @click="closeLightbox">
           <i class="fas fa-times"></i>
         </button>
