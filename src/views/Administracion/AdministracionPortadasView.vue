@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid mt-4">
       <h1 class="mb-4 text-center">Gestión de Portadas</h1>
+      <p class="text-danger">*IMPORTANTE!, las imagenes deben tener un tamaño menor a 600 KB c/u, para mayor velocidad del servicio y reducción de costos en todos los sentidos. Reducir peso si es necesario en servicios en línea</p>
   
       <!-- Form for creating/updating portada -->
       <div class="row justify-content-center mb-4">

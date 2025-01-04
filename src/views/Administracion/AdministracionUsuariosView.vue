@@ -23,7 +23,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in users" :key="`${user.id}-${user.image}`">
+              <tr v-for="user in users" :key="user.id">
                 <td>{{ user.id }}</td>
                 <td>
                   <img v-if="user.image" :src="user.image" :alt="`Imagen de ${user.primer_nombre}`" class="img-thumbnail" style="max-width: 50px;">
@@ -49,12 +49,12 @@
     </div>
 
     <!-- User Modal -->
-    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div v-if="showUserModal" class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="userModalLabel">{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeUserModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveUser">
@@ -87,18 +87,21 @@
     </div>
 
     <!-- User Details Modal -->
-    <div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div v-if="showUserDetailsModal" class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="userDetailsModalLabel">Detalles del Usuario</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeUserDetailsModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <h6>Información Personal</h6>
             <p><strong>Nombre:</strong> {{ currentUser.primer_nombre }} {{ currentUser.segundo_nombre }}</p>
             <p><strong>Apellido:</strong> {{ currentUser.primer_apellido }} {{ currentUser.segundo_apellido }}</p>
-            <p><strong>Imagen:</strong> <img v-if="currentUser.image" :src="currentUser.image" alt="User Image" class="img-thumbnail" style="max-width: 100px;"></p>
+            <p><strong>Imagen:</strong> 
+              <img v-if="currentUser.image" :src="currentUser.image" alt="User Image" class="img-thumbnail" style="max-width: 100px;">
+              <span v-else>No hay imagen de perfil</span>
+            </p>
 
             <h6 class="mt-4">Contactos</h6>
             <div v-if="contacts.length">
@@ -116,6 +119,9 @@
                 </div>
               </div>
             </div>
+            <div v-else>
+              <p>Este usuario no tiene contactos registrados.</p>
+            </div>
             <button @click="openContactModal()" class="btn btn-primary btn-sm mt-2">
               <i class="fas fa-plus"></i> Agregar Contacto
             </button>
@@ -127,21 +133,24 @@
                 <i class="fas fa-edit"></i> Editar Credenciales
               </button>
             </div>
-            <button v-else @click="openCredentialModal()" class="btn btn-primary btn-sm">
-              <i class="fas fa-plus"></i> Agregar Credenciales
-            </button>
+            <div v-else>
+              <p>Este usuario no tiene credenciales registradas.</p>
+              <button @click="openCredentialModal()" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> Agregar Credenciales
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Contact Modal -->
-    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div v-if="showContactModal" class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="contactModalLabel">{{ isEditingContact ? 'Editar Contacto' : 'Nuevo Contacto' }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeContactModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveContact">
@@ -165,12 +174,12 @@
     </div>
 
     <!-- Credential Modal -->
-    <div class="modal fade" id="credentialModal" tabindex="-1" aria-labelledby="credentialModalLabel" aria-hidden="true">
+    <div v-if="showCredentialModal" class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="credentialModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="credentialModalLabel">{{ credentials ? 'Editar Credenciales' : 'Nuevas Credenciales' }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="closeCredentialModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveCredentials">
@@ -196,8 +205,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-const empresaId = 1; // Assuming we're working with empresa ID 1
-// const baseURL = `http://localhost:8080/administracion/empresas/${empresaId}/usuarios`;
+const empresaId = 1;
 const baseURL = `https://v1backendcasasamilia-production.up.railway.app/administracion/empresas/${empresaId}/usuarios`;
 
 const users = ref([]);
@@ -211,17 +219,13 @@ const isEditingContact = ref(false);
 const selectedImage = ref(null);
 const imagePreview = ref('');
 
-const userModal = ref(null);
-const userDetailsModal = ref(null);
-const contactModal = ref(null);
-const credentialModal = ref(null);
+const showUserModal = ref(false);
+const showUserDetailsModal = ref(false);
+const showContactModal = ref(false);
+const showCredentialModal = ref(false);
 
 onMounted(() => {
   fetchUsers();
-  userModal.value = new bootstrap.Modal(document.getElementById('userModal'));
-  userDetailsModal.value = new bootstrap.Modal(document.getElementById('userDetailsModal'));
-  contactModal.value = new bootstrap.Modal(document.getElementById('contactModal'));
-  credentialModal.value = new bootstrap.Modal(document.getElementById('credentialModal'));
 });
 
 const fetchUsers = async () => {
@@ -230,12 +234,7 @@ const fetchUsers = async () => {
     users.value = response.data.usuarios;
   } catch (error) {
     console.error('Error fetching users:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudieron cargar los usuarios',
-      confirmButtonText: 'OK'
-    });
+    showErrorAlert('No se pudieron cargar los usuarios');
   }
 };
 
@@ -244,40 +243,31 @@ const openUserModal = (user = null) => {
   currentUser.value = user ? { ...user } : {};
   selectedImage.value = null;
   imagePreview.value = user?.image || '';
-  userModal.value.show();
+  showUserModal.value = true;
+};
+
+const closeUserModal = () => {
+  showUserModal.value = false;
 };
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    // Validar el tamaño del archivo (por ejemplo, máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'La imagen es demasiado grande. El tamaño máximo es 5MB.',
-        confirmButtonText: 'OK'
-      });
-      event.target.value = ''; // Limpiar el input
+      showErrorAlert('La imagen es demasiado grande. El tamaño máximo es 5MB.');
+      event.target.value = '';
       return;
     }
 
-    // Validar el tipo de archivo
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El archivo seleccionado no es una imagen válida. Se permiten JPG, PNG y GIF.',
-        confirmButtonText: 'OK'
-      });
-      event.target.value = ''; // Limpiar el input
+      showErrorAlert('El archivo seleccionado no es una imagen válida. Se permiten JPG, PNG y GIF.');
+      event.target.value = '';
       return;
     }
 
     selectedImage.value = file;
     
-    // Crear vista previa de la imagen
     const reader = new FileReader();
     reader.onload = (e) => {
       imagePreview.value = e.target.result;
@@ -323,24 +313,14 @@ const saveUser = async () => {
       } else {
         users.value.push(updatedUser);
       }
-      userModal.value.hide();
-      await Swal.fire({
-        icon: 'success',
-        title: 'Éxito',
-        text: isEditing.value ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente',
-        confirmButtonText: 'OK'
-      });
+      closeUserModal();
+      showSuccessAlert(isEditing.value ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
     } else {
       throw new Error(response.data.message || 'No se pudo guardar el usuario o subir la imagen');
     }
   } catch (error) {
     console.error('Error saving user:', error);
-    await Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: error.response?.data?.message || error.message || 'No se pudo guardar el usuario o subir la imagen',
-      confirmButtonText: 'OK'
-    });
+    showErrorAlert(error.response?.data?.message || error.message || 'No se pudo guardar el usuario o subir la imagen');
   }
 };
 
@@ -358,12 +338,12 @@ const deleteUser = async (id) => {
 
     if (result.isConfirmed) {
       await axios.delete(`${baseURL}/${id}`);
-      Swal.fire('Eliminado', 'El usuario ha sido eliminado', 'success');
+      showSuccessAlert('El usuario ha sido eliminado');
       fetchUsers();
     }
   } catch (error) {
     console.error('Error deleting user:', error);
-    Swal.fire('Error', 'No se pudo eliminar el usuario', 'error');
+    showErrorAlert('No se pudo eliminar el usuario');
   }
 };
 
@@ -371,7 +351,11 @@ const viewUserDetails = async (user) => {
   currentUser.value = { ...user };
   await fetchContacts(user.id);
   await fetchCredentials(user.id);
-  userDetailsModal.value.show();
+  showUserDetailsModal.value = true;
+};
+
+const closeUserDetailsModal = () => {
+  showUserDetailsModal.value = false;
 };
 
 const fetchContacts = async (userId) => {
@@ -397,23 +381,27 @@ const fetchCredentials = async (userId) => {
 const openContactModal = (contact = null) => {
   isEditingContact.value = !!contact;
   currentContact.value = contact ? { ...contact } : {};
-  contactModal.value.show();
+  showContactModal.value = true;
+};
+
+const closeContactModal = () => {
+  showContactModal.value = false;
 };
 
 const saveContact = async () => {
   try {
     if (isEditingContact.value) {
       await axios.put(`${baseURL}/${currentUser.value.id}/contactos/${currentContact.value.id}`, currentContact.value);
-      Swal.fire('Éxito', 'Contacto actualizado correctamente', 'success');
+      showSuccessAlert('Contacto actualizado correctamente');
     } else {
       await axios.post(`${baseURL}/${currentUser.value.id}/contactos/`, currentContact.value);
-      Swal.fire('Éxito', 'Contacto creado correctamente', 'success');
+      showSuccessAlert('Contacto creado correctamente');
     }
     await fetchContacts(currentUser.value.id);
-    contactModal.value.hide();
+    closeContactModal();
   } catch (error) {
     console.error('Error saving contact:', error);
-    Swal.fire('Error', 'No se pudo guardar el contacto', 'error');
+    showErrorAlert('No se pudo guardar el contacto');
   }
 };
 
@@ -431,44 +419,64 @@ const deleteContact = async (contactId) => {
 
     if (result.isConfirmed) {
       await axios.delete(`${baseURL}/${currentUser.value.id}/contactos/${contactId}`);
-      Swal.fire('Eliminado', 'El contacto ha sido eliminado', 'success');
+      showSuccessAlert('El contacto ha sido eliminado');
       await fetchContacts(currentUser.value.id);
     }
   } catch (error) {
     console.error('Error deleting contact:', error);
-    Swal.fire('Error', 'No se pudo eliminar el contacto', 'error');
+    showErrorAlert('No se pudo eliminar el contacto');
   }
 };
 
 const openCredentialModal = () => {
   currentCredentials.value = credentials.value ? { ...credentials.value, password: '' } : {};
-  credentialModal.value.show();
+  showCredentialModal.value = true;
+};
+
+const closeCredentialModal = () => {
+  showCredentialModal.value = false;
 };
 
 const saveCredentials = async () => {
   try {
     if (credentials.value) {
       await axios.put(`${baseURL}/${currentUser.value.id}/credenciales/${credentials.value.id}`, currentCredentials.value);
-      Swal.fire('Éxito', 'Credenciales actualizadas correctamente', 'success');
+      showSuccessAlert('Credenciales actualizadas correctamente');
     } else {
       await axios.post(`${baseURL}/${currentUser.value.id}/credenciales/`, currentCredentials.value);
-      Swal.fire('Éxito', 'Credenciales creadas correctamente', 'success');
+      showSuccessAlert('Credenciales creadas correctamente');
     }
     await fetchCredentials(currentUser.value.id);
-    credentialModal.value.hide();
+    closeCredentialModal();
   } catch (error) {
     console.error('Error saving credentials:', error);
-    Swal.fire('Error', 'No se pudieron guardar las credenciales', 'error');
+    showErrorAlert('No se pudieron guardar las credenciales');
   }
+};
+
+const showSuccessAlert = (message) => {
+  Swal.fire({
+    icon: 'success',
+    title: 'Éxito',
+    text: message,
+    confirmButtonText: 'OK'
+  });
+};
+
+const showErrorAlert = (message) => {
+  Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: message,
+    confirmButtonText: 'OK'
+  });
 };
 </script>
 
 <style scoped>
-/* @import 'bootstrap/dist/css/bootstrap.min.css';
-@import '@fortawesome/fontawesome-free/css/all.min.css'; */
-
 .modal-body {
   max-height: 70vh;
   overflow-y: auto;
 }
 </style>
+

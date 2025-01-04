@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid py-4">
     <h1 class="mb-4 text-center animate__animated animate__fadeIn">Gestión de Prefabricadas</h1>
+    <p class="text-danger">*IMPORTANTE!, las imagenes deben tener un tamaño menor a 600 KB c/u, para mayor velocidad del servicio y reducción de costos en todos los sentidos</p>
 
     <!-- Lista de Prefabricadas -->
     <div class="card mb-4 animate__animated animate__fadeInUp">
@@ -251,6 +252,8 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <p class="text-danger">*IMPORTANTE!, las imagenes deben ser menor a 600 KB cada una</p>
+            <p class="text-primary">Si una imagen pesa más de 600 kb reducir su tamaño en la web, como en: https://tinypng.com/ u otro servicio</p>
             <form @submit.prevent="saveImagen">
               <div class="mb-3">
                 <label for="imageFile" class="form-label">Imagen</label>
@@ -273,6 +276,8 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="saveCaracteristica">
+              <p class="text-success">*Algunas Claves tipicas son: Dormitorios, Baños, Cocina, Living, Sala, Bodega, Comedor, etc. En Valor va según lo necesario: número, detalle o deescripción</p>
+              <p class="text-success">**Ejemplo: Clave: Baños | Valor: 2</p>
               <div class="mb-3">
                 <label for="clave" class="form-label">Clave</label>
                 <input type="text" class="form-control" id="clave" v-model="currentCaracteristica.clave" required>

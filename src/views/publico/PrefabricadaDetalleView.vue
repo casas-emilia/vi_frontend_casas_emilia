@@ -141,6 +141,8 @@ const getFeatureIcon = (clave) => {
     'Material': 'fas fa-hard-hat',
     'material': 'fas fa-hard-hat',
     'Diseño': 'fas fa-pencil-ruler',
+    'Bodega' : 'fas fa-warehouse',
+    'bodega' : 'fas fa-warehouse'
   };
   return iconMap[clave] || 'fas fa-check';
 };
