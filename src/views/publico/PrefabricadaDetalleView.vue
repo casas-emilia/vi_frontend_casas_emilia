@@ -254,10 +254,10 @@ const getFeatureIcon = (clave) => {
       <section v-if="prefabricada.caracteristicas?.length" class="features-section py-5 bg-white">
         <div class="container">
           <h2 class="text-center mb-5 fw-bold text-primary">Características Destacadas</h2>
-          <div class="row">
+          <div class="row row-cols-2 row-cols-md-3 g-4">
             <div v-for="(caracteristica, index) in prefabricada.caracteristicas" 
-                 :key="index"
-                 class="col-md-4 mb-4">
+                :key="index"
+                class="col">
               <div class="card h-100 border-0 shadow-sm">
                 <div class="card-body">
                   <div class="feature-icon mb-3">
@@ -271,6 +271,8 @@ const getFeatureIcon = (clave) => {
           </div>
         </div>
       </section>
+
+
 
       <!-- Pricing Section -->
       <section v-if="prefabricada.precios?.length"
