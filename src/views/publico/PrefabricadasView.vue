@@ -121,7 +121,7 @@ onMounted(loadInitialData);
             </p>
           </div>
           <div class="col-md-6 text-end">
-            <img src="/img/placeholder.png" alt="Casa con llave" class="img-fluid">
+            <img src="/img/casas_prefabricadas_emilia.jpg" alt="Casa con llave" class="img-fluid rounded">
           </div>
         </div>
       </div>
